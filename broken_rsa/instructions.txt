@@ -1,0 +1,8 @@
+# Instructions for competitors
+1. You have been given a public key encryption program based on RSA that has a mistake in it.
+2. Your job is to decrypt the file
+3. There are no tricks in the source code, you may believe the comments that tell you which parts of the code to ignore
+4. It would be __extremely__ prudent to use the provided skeleton as a starting point.
+5. Good Luck!
+
+

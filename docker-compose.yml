@@ -1,0 +1,119 @@
+version: "3"
+services:
+
+  #bpf-fun:
+  #  image: bpf-fun
+  #  cap_add:
+  #    - NET_ADMIN
+  #    - NET_RAW
+
+  cyber-haiku:
+    build: cyber_haiku
+    image: cyber-haiku
+    ports:
+      - "5000:5000"
+
+  forgot-to-patch:
+    build: forgot_to_patch
+    image: forgot-to-patch
+    links:
+      - forgot-to-patch-mysql
+    ports:
+      - "5001:80"
+
+  forgot-to-patch-mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=aSHITTYpassword123!@#
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=ANOTHERshittyPASSWORD#@!123
+
+  how-the-hell:
+    build: how_the_hell
+    image: how-the-hell
+    ports:
+      - "5002:80"
+
+  math-machine:
+    build: math_machine
+    image: math-machine
+    ports:
+      - "5003:5000"
+
+  soupy-files:
+    build: soupy_files
+    image: soupy-files
+    ports:
+      - "5004:80"
+
+  otp:
+    build: otp
+    image: otp
+    ports:
+      - "5006:5000"
+
+  temp-files:
+    build: temp_files
+    image: temp-files
+    ports:
+      - "5007:5000"
+
+  ssh-host:
+    build: ssh_host
+    image: ssh-host
+    ports:
+      - "2222:22"
+    links:
+      - helloworld-c
+      - helloworld-c2
+      - helloworld-py
+      - overflow1
+      - overflow2
+      - overflow3
+      - overflow4
+      - overflow5
+      - sql
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    #deploy:
+    #  replicas: 3
+
+  # These services are not directly instantiated. They're only listed here in
+  # order to satisfy build dependencies for ssh-host.
+  helloworld-c:
+    build: helloworld_c
+    image: helloworld-c
+    command: /bin/true
+  helloworld-c2:
+    build: helloworld_c2
+    image: helloworld-c2
+    command: /bin/true
+  helloworld-py:
+    build: helloworld_py
+    image: helloworld-py
+    command: /bin/true
+  overflow1:
+    build: overflow1
+    image: overflow1
+    command: /bin/true
+  overflow2:
+    build: overflow2
+    image: overflow2
+    command: /bin/true
+  overflow3:
+    build: overflow3
+    image: overflow3
+    command: /bin/true
+  overflow4:
+    build: overflow4
+    image: overflow4
+    command: /bin/true
+  overflow5:
+    build: overflow5
+    image: overflow5
+    command: /bin/true
+  sql:
+    build: sql
+    image: sql
+    command: /bin/true

@@ -1,0 +1,1 @@
+If the known modulus n is the result of a known prime multiplied with an unknown prime, how can you figure out the unknown prime?

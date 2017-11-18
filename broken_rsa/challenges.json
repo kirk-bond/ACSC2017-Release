@@ -1,0 +1,31 @@
+[
+    { 
+        "name" : "Crypto 4",
+        "points" : 150,
+        "solution" : "It's a trap!",
+        "category" : "crypto",
+        "instruction_lines" : [
+          "1. You have been given a public key encryption program based on RSA that has a mistake in it.",
+          "2. Your job is to decrypt the file",
+          "3. There are no tricks in the source code, you may believe the comments that tell you which parts of the code to ignore",
+          "4. It would be __extremely__ prudent to use the provided skeleton as a starting point.",
+          "5. Good Luck!"],
+        "instructions" : null,
+        "author" : "Walt Schell",
+        "hints" : [
+                    {
+                        "hint" : "Are all the fields of the public key meant to be public?",
+                        "cost" : 25
+                    },
+                    {
+                        "hint" : "Look for where d is calculated (gen_keypair) for how to calculate it.",
+                        "cost" : 25
+                    },
+                    {
+                        "hint" : "If the known modulus n is the result of a known prime multiplied with an unknown prime, how can you figure out the unknown prime?",
+                        "cost" : 25
+                    }
+                ],
+        "downloadable_files" : ["./skeleton_solution.py", "./brokenrsa.py"]
+    }
+]

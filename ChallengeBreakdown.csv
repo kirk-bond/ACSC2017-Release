@@ -1,0 +1,38 @@
+Name,Author,Challenge Type,Description,Required Resources,Port
+how_the_hell,Troy,web exploit,Basic php website.  Need to either reload the webpage a whole shit load of times or just modify the cookie counter to see the flag,Simple webserver capable of serving a php page,8181
+soupy_files,Troy,scripting,Scrape a bunch of websites and put some logic on the backend to see if the site meets several conditions,web server.  All content is static,8200
+osint1,Troy,,Open source searching.  Requires search of Shodan,None,N/A
+where_am_i,Troy,network forensics,Examine a pcap file to first identify a router from OSPF traffic and then find its location based on SNMP traffic,None just the PCAP file,N/A
+bpf_fun,Walt,,Reverse engineer a bpf program,Root access on VM with the xt_bpf iptables module and nftables,
+broken_rsa,Walt,crypto,Exploit broken RSA implementation, None. Just host the files,N/A
+QRPartDeux,Kirk,,Research and scan obscure QRcode formats,Cell phone with app that can scan these codes and internet access,N/A
+cyber_haiku,Hunstad,,Python exploitation,Server with python3,
+helloworld_c,Hunstad,RE,C exploitation,Server running Docker,
+helloworld_c_2,Hunstad,RE,C exploitation,Server running Docker,
+helloworld_py,Hunstad,RE,Python exploitation,Server running Docker,
+otp,Hunstad,crypto,Python crypto,Server with python3,
+overflow1,Hunstad,RE,C exploitation,Server running Docker,
+overflow2,Hunstad,RE,C exploitation,Server running Docker,
+overflow3,Hunstad,RE,C exploitation,Server running Docker,
+overflow4,Hunstad,RE,C exploitation,Server running Docker,
+overflow5,Hunstad,RE,C exploitation,Server running Docker,
+temp_files,Hunstad,RE,Python exploitation,Server with python3,
+nix_grabbag,Troy,grab bag,A number of flags based on system information as well as a variety of basic nix tasks,Must download the VM,N/A
+win_grabbag,Troy,grab bag,A number of flags based on system information as well as a variety of basic windows tasks,Must download the VM,N/A
+whats_my_password,Troy,crypto,Open a backup of a SQL database and decode the md5 encoded password,Just download the file,N/A
+whats_my_password2,Troy,web exploit,Find the database password for the site,Just download the file,N/A
+find_the_flag,Troy,network forensics,Find the flag the in the telnet session,Just download the file,N/A
+find_the_stack,Troy,OSINT,Find the name of the street where the photo was taken,Just download the image ,N/A
+80s Trivia,,Multiple,Text file with 80s trivia,Use the format at the top of the 80s Trivia - General file,
+riding_the_rollercoaster,Troy,crypto,A short encrypted phrase,None just the plain text phrase,N/A
+forgot_to_patch,Troy,Web Exploit,Use a known file inclusion fault for wordpress plugin,Server hosting a simple vulnerable wordpress site,9500
+math_machine,Troy,scripting,Complete multiple math problems,Server hosting simple python script,4586
+sql,Jake,crypto,extract a database dump and crack the password,Docker Machine,
+where_am_i,Troy,Network Forensics, examine SNMP traffic and OSPF traffic to identify a router location,Just the pcap file,N/A
+osint2,Troy,OSINT,Find the exposed wordpress config file, Already hosted,N/A
+osint3,Troy,OSINT,Find the exposed pdf with sensative information, already hosted,N/A
+animate_me,Troy,Forensics,Tear apart the GIF file and find the flag, just the file,N/A
+find_the_stack3,Troy,OSINT,Find the flag which is located on the Flickr page the image was downloaded from,"Nothing, just the file",N/A
+slow_mover,Troy,Forensics,Your're given a pcap file.  Find the flag encoded in the source port,Just the pcap file,N/A
+checker1,Sharpsten,RE,,Just the binary,
+checker2,Sharpsten,RE,,Just the binary,

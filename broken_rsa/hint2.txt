@@ -1,0 +1,1 @@
+Look for where d is calculated (gen_keypair) for how to calculate it.

